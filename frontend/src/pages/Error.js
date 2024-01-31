@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MainNavigation from '../../../react-router-dom-exercise/src/components/MainNavigation';
+import MainNavigation from '../components/MainNavigation';
 
 function Error() {
   return (
