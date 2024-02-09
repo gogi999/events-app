@@ -1,44 +1,42 @@
+import { Suspense } from 'react';
+
 import {
-  json,
+  Await,
+  defer,
   useLoaderData,
 } from 'react-router-dom';
 
 import EventsList from '../components/EventsList';
+import { loadEvents } from '../helpers/loadEvents';
 
 function Events() {
-  const data = useLoaderData();
+  const { events } = useLoaderData();
+
+  return (
+    <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
+      <Await resolve={events}>
+        {(loadedEvents) => <EventsList events={loadedEvents} />}
+      </Await>
+    </Suspense>
+  );
 
   // if (data.isError) {
   //   return <p>{data.message}</p>;
   // }
 
-  const events = data.events;
+  // const events = data.events;
 
-  return (
-    <>
-      <EventsList events={events} />
-    </>
-  );
+  // return (
+  //   <>
+  //     <EventsList events={events} />
+  //   </>
+  // );
 }
 
 export default Events;
 
-export async function loader() {
-  const response = await fetch('http://localhost:8080/events');
-
-  if (!response.ok) {
-    // return { isError: true, message: 'Could not fetch events!'}
-    // eslint-disable-next-line no-throw-literal
-    // throw new Response(JSON.stringify({ message: 'Could not fetch events!' }), {
-    //   status: 500,
-    // });
-    return json(
-      { message: 'Could not fetch events!' }, 
-      {
-        status: 500,
-      }
-    );
-  } else {
-    return response;
-  }
+export function loader() {
+  return defer({
+    events: loadEvents(),
+  });
 }
